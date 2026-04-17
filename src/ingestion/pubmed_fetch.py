@@ -10,7 +10,17 @@ base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
 def search_pubmed(query, retmax=1000):
     """
-    Get PubMed IDs (PMIDs) for query
+    Get PubMed IDs (PMIDs) for query.
+
+    Uses the PubMed API to get article IDs matching the query and
+    returns them as a list of IDs.
+
+    Parameters
+    ----------
+    query : str, required
+        Search query from user to be searched in the database.
+    retmax : int, optional
+        Max number of article ID numbers to return (deefualt is 1000).
     """
 
     url = base_url + "esearch.fcgi"
@@ -33,10 +43,26 @@ def search_pubmed(query, retmax=1000):
 
 def fetch_details(id_list, batch_size=200, sleep_time=0.5):
     """
-    Fetch article detils 
+    Fetch and parse article details of ID list articles.
+
+    Uses the PubMed API to get  details on article IDs. It
+    then parses those details to isolate the title and abstract 
+    and returns them as a list.
+
+    Parameters
+    ----------
+    id_list : str, required
+        List of article ID numbers to find details of.
+    batch_size : int, optional
+        size of batch to query the API with. Between 100-500 
+        is customary (defualt is 200).
+    sleep_time : int, optional
+        Time between API querys. No more than 3 per 
+        second (sleep_time=0.34) is allowed without 
+        API key (defualt is 0.5, 2 per second).
     """
     
-    url = base_url + "esearch.fcgi"
+    url = base_url + "efetch.fcgi"
     all_records = []
 
     for i in range(0, len(id_list), batch_size):
@@ -58,10 +84,18 @@ def fetch_details(id_list, batch_size=200, sleep_time=0.5):
 
     return all_records
 
-
 def parse_pubmed_xml(xml_text):
     """
-    Parse XML response into structured records
+    Parse XML response into structured records.
+
+    Takes in XML response from PubMed API efetch 
+    and parses out PMID, Article Title, and Abstract.
+    Then returns those items in a list.
+
+    Parameters
+    ----------
+    xml_text : str, required
+        XML response from PubMed API efetch.
     """
 
     root = ET.fromstring(xml_text)
@@ -88,7 +122,22 @@ def parse_pubmed_xml(xml_text):
 
 def fetch_pubmed_data(query, output_path, retmax=1000):
     """
-    Run full pipeline: search, fetch, save
+    Run full pipeline: search, fetch, save.
+
+    Runs the full pipeline of searching the PubMed 
+    database from searching the database based on 
+    the query, to fetching the title and abstract,
+    and finally saving to data/raw directory.
+
+    Parameters
+    ----------
+    query : str, required
+        Search query from user to be searched in the database.
+    output_path : str, required
+        size of batch to query the API with. Between 100-500 
+        is customary (defualt is 200).
+    retmax : int, optional
+        Max number of article ID numbers to return (defualt is 1000).
     """
 
     print(f"Searching PubMed for: {query}")
