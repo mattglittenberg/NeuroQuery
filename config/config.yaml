@@ -1,0 +1,18 @@
+data:
+  raw_path: data/raw/pubmed_raw.json
+  processed_path: data/processed/cleaned.parquet
+
+ingestion:
+  query: "Alzheimers disease and biomarkers"
+  retmax: 1000
+  
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+  output_path: data/embeddings/embeddings.npy
+
+search:
+  top_k: 5
+
+clustering:
+  n_clusters: 10
