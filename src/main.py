@@ -1,5 +1,5 @@
 import argparse
-from utils.helpers import load_config
+from src.utils.helpers import load_config
 from src.ingestion.pubmed_fetch import fetch_pubmed_data
 from src.preprocessing.clean_txt import preprocess
 from src.embeddings.generate_embeddings import generate_embeddings

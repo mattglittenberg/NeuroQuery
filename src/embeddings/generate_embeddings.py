@@ -33,6 +33,6 @@ def generate_embeddings():
     np.save(config["embedding"]["output_path"], embeddings)
 
     print(f"Saved embeddings: {embeddings.shape}")
-    print(embeddings)
+    
 if __name__ == "__main__":
     generate_embeddings()
