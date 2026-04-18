@@ -9,22 +9,21 @@ Built to mirror real-world ML systems, SciQuery emphasizes **reproducibility, mo
 ## Key Features
 
 * **Automated Data Ingestion**
-
   * Pulls real-time data from PubMed via the NCBI E-utilities API
+    
 * **Text Processing Pipeline**
-
   * Cleans and structures raw scientific text for downstream modeling
+    
 * **Transformer-Based Embeddings**
-
-  * Uses Sentence-BERT (PyTorch-backed) to encode abstracts into dense vectors
+  * Uses Sentence-BERT to encode abstracts into dense vectors
+    
 * **Semantic Search**
-
   * Retrieve relevant papers based on meaning, not keywords
+    
 * **Topic Modeling / Clustering**
-
   * Discover latent research themes across large corpora
+    
 * **Reproducible Pipeline**
-
   * Config-driven workflow with modular components
 
 ---
@@ -40,11 +39,10 @@ PubMed API → ETL Pipeline → Cleaned Text → Embeddings → Search + Cluster
 ## Tech Stack
 
 * **Python**
-* **PyTorch** (via SentenceTransformers)
+* **PyTorch**
 * **Hugging Face Transformers**
 * **scikit-learn**
 * **Pandas / NumPy**
-* **YAML (config-driven pipelines)**
 
 ---
 
@@ -102,7 +100,7 @@ This will:
 ### 2. Run Semantic Search
 
 ```bash
-python src/main.py --query "alzheimers disease biomarkers"
+python -m src.main --query "alzheimers disease biomarkers"
 ```
 
 Example Output:
