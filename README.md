@@ -102,7 +102,7 @@ This will:
 ### 2. Run Semantic Search
 
 ```bash
-python src/main.py --query "alzheimers disease biomarkers"
+python -m src.main --query "alzheimers disease biomarkers"
 ```
 
 Example Output:
