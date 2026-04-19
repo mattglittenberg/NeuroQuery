@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 
 st.set_page_config(
-    page_title="SciQuery",
+    page_title="NeuroQuery",
     page_icon="🧠",
     layout="wide"
 )
@@ -48,8 +48,8 @@ def semantic_search(query, model, df, embeddings, top_k=TOP_K):
 
 
 def main():
-    st.title("🧠 SciQuery")
-    st.subheader("Semantic Search & Topic Discovery for Scientific Literature")
+    st.title("🧠 NeuroQuery")
+    st.subheader("Semantic Search & Topic Discovery for Alzheimer's Disease Literature")
 
     st.markdown(
         "Search biomedical literature using transformer-based semantic search over PubMed abstracts."
@@ -58,8 +58,8 @@ def main():
     with st.sidebar:
         st.header("About")
         st.write(
-            "SciQuery ingests scientific literature, generates transformer-based embeddings, "
-            "and enables semantic search across biomedical research."
+            "NeuroQuery ingests scientific literature, generates transformer-based embeddings, "
+            "and enables semantic search across Alzheimer's Disease research."
         )
 
         st.divider()
