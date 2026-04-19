@@ -1,14 +1,16 @@
 import requests
 import time
 import json
+import logging
+from tqdm import tqdm
 from pathlib import Path
 from src.utils.helpers import ensure_dir
 import xml.etree.ElementTree as ET
 
 
-base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
-def search_pubmed(query, retmax=1000):
+def search_pubmed(query: str, reldate: int = 3650, retmax: int = 1000) -> list[str]:
     """
     Get PubMed IDs (PMIDs) for query.
 
@@ -20,16 +22,20 @@ def search_pubmed(query, retmax=1000):
     query : str, required
         Search query from user to be searched in the database.
     retmax : int, optional
-        Max number of article ID numbers to return (deefualt is 1000).
+        Max number of article ID numbers to return (defualt is 1000).
+    reldate : int, optional
+        Number of days in the past to include in the search (default is 3650 or 10 years)
     """
 
-    url = base_url + "esearch.fcgi"
+    url = BASE_URL + "esearch.fcgi"
 
     param = {
         "db": "pubmed",
         "term": query,
         "retmax": retmax,
-        "retmode": "json"
+        "retmode": "json",
+        "datetype": "pdat",
+        "reldate": reldate
     }
 
     response = requests.get(url, params=param)
@@ -41,7 +47,7 @@ def search_pubmed(query, retmax=1000):
     return id_list
 
 
-def fetch_details(id_list, batch_size=200, sleep_time=0.5):
+def fetch_details(id_list: list[str], batch_size: int = 200, sleep_time: float = 0.5) -> list[dict]:
     """
     Fetch and parse article details of ID list articles.
 
@@ -55,17 +61,17 @@ def fetch_details(id_list, batch_size=200, sleep_time=0.5):
         List of article ID numbers to find details of.
     batch_size : int, optional
         size of batch to query the API with. Between 100-500 
-        is customary (defualt is 200).
+        is customary (default is 200).
     sleep_time : int, optional
         Time between API querys. No more than 3 per 
         second (sleep_time=0.34) is allowed without 
-        API key (defualt is 0.5, 2 per second).
+        API key (default is 0.5, 2 per second).
     """
     
-    url = base_url + "efetch.fcgi"
+    url = BASE_URL + "efetch.fcgi"
     all_records = []
 
-    for i in range(0, len(id_list), batch_size):
+    for i in tqdm(range(0, len(id_list), batch_size), desc="Fetching Batches"):
         batch_ids = id_list[i:i + batch_size]
 
         param = {
@@ -84,7 +90,7 @@ def fetch_details(id_list, batch_size=200, sleep_time=0.5):
 
     return all_records
 
-def parse_pubmed_xml(xml_text):
+def parse_pubmed_xml(xml_text: str) -> list[dict]:
     """
     Parse XML response into structured records.
 
@@ -114,13 +120,14 @@ def parse_pubmed_xml(xml_text):
                 "title": title,
                 "abstract": abstract
             })
-        except Exception:
+        except Exception as e:
+            logging.warning(f"Skipping article due to parse error: {e}")
             continue
 
     return records
 
 
-def fetch_pubmed_data(query, output_path, retmax=1000):
+def fetch_pubmed_data(query: str, output_path: str | Path, reldate: int = 3650, retmax: int = 1000) -> None:
     """
     Run full pipeline: search, fetch, save.
 
@@ -135,13 +142,15 @@ def fetch_pubmed_data(query, output_path, retmax=1000):
         Search query from user to be searched in the database.
     output_path : str, required
         size of batch to query the API with. Between 100-500 
-        is customary (defualt is 200).
+        is customary (default is 200).
     retmax : int, optional
-        Max number of article ID numbers to return (defualt is 1000).
+        Max number of article ID numbers to return (default is 1000).
+    reldate : int, optional
+        Number of days in the past to include in the search (default is 3650 or 10 years)
     """
 
     print(f"Searching PubMed for: {query}")
-    id_list = search_pubmed(query, retmax=retmax)
+    id_list = search_pubmed(query, retmax=retmax, reldate=reldate)
 
     print(f"Found {len(id_list)} articles")
 
@@ -162,5 +171,6 @@ if __name__ == "__main__":
     fetch_pubmed_data(
         query="Alzheimers disease AND biomarkers",
         output_path = "data/raw/pubmed_raw.json",
+        reldate=3650,
         retmax=1000
     )
